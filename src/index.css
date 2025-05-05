@@ -127,3 +127,16 @@
 .floating-label label {
   @apply absolute top-2 left-3 text-gray-500 transition-all duration-200 pointer-events-none;
 }
+
+/* Table styles */
+.table-header {
+  @apply h-14 border-b;
+}
+
+.table-header.dark {
+  @apply border-gray-700;
+}
+
+.table-header.light {
+  @apply border-gray-200;
+}

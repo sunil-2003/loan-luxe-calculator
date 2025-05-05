@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ChevronDown } from 'lucide-react';
@@ -8,6 +8,7 @@ const CurrencySelector: React.FC = () => {
   const { currency, setCurrency, exchangeRates } = useCurrency();
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currencies = [
     { code: 'USD', name: 'US Dollar' },
@@ -19,24 +20,47 @@ const CurrencySelector: React.FC = () => {
     { code: 'CAD', name: 'Canadian Dollar' },
   ];
 
-  const handleSelect = (code: any) => {
-    setCurrency(code);
+  const handleSelect = (code: string) => {
+    setCurrency(code as any);
     setIsOpen(false);
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`currency-dropdown ${theme} flex justify-between items-center w-40`}
-      >
-        <span>{currency}</span>
-        <ChevronDown className="h-4 w-4" />
-      </button>
+    <div className="relative" ref={dropdownRef}>
+      <div className="floating-label relative">
+        <div className={`border rounded-md border-input relative bg-background`}>
+          {true && (
+            <span className={`absolute -top-2.5 left-2 px-1 text-xs transform bg-background text-gray-500`}>
+              Currency
+            </span>
+          )}
+          <div 
+            className="flex justify-between items-center h-10 px-3 cursor-pointer"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <span>{currency}</span>
+            <ChevronDown className="h-4 w-4" />
+          </div>
+        </div>
+      </div>
       
       {isOpen && (
-        <div className={`absolute z-10 mt-1 w-40 rounded-md shadow-lg ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
-          <ul className="py-1">
+        <div className={`absolute z-50 mt-1 w-full rounded-md shadow-lg ${theme === 'dark' ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'}`}>
+          <ul className="py-1 max-h-60 overflow-auto">
             {currencies.map((curr) => (
               <li 
                 key={curr.code}

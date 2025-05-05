@@ -87,7 +87,7 @@ const ExchangeRateTable: React.FC = () => {
           <div className={`table-container ${theme}`}>
             <table className="w-full">
               <thead>
-                <tr className={`table-header ${theme}`}>
+                <tr className={`table-header ${theme} h-14`}>
                   <th className="text-left w-1/2 py-3 px-4">Currency</th>
                   <th className="text-right w-1/2 py-3 px-4">Rate</th>
                 </tr>
@@ -96,7 +96,7 @@ const ExchangeRateTable: React.FC = () => {
                 {currentRates.map((rate) => (
                   <tr 
                     key={rate.code}
-                    className={`table-row ${theme} ${theme === 'dark' ? 'hover:bg-gray-800/50' : 'hover:bg-gray-50'}`}
+                    className={`border-b ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'}`}
                   >
                     <td className="py-3 px-4">{rate.code}</td>
                     <td className="text-right py-3 px-4">{rate.rate.toFixed(4)}</td>

@@ -9,6 +9,9 @@ interface FloatingLabelInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   type?: string;
+  className?: string;
+  readOnly?: boolean;
+  rightElement?: React.ReactNode;
 }
 
 const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
@@ -17,7 +20,10 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   value,
   onChange,
   error,
-  type = "text"
+  type = "text",
+  className = "",
+  readOnly = false,
+  rightElement
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -31,7 +37,7 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
   const showLabel = isFocused || hasValue;
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <div className={`border rounded-md ${error ? 'border-red-500' : 'border-input'} relative bg-background`}>
         {showLabel && (
           <span 
@@ -41,16 +47,22 @@ const FloatingLabelInput: React.FC<FloatingLabelInputProps> = ({
             {label}
           </span>
         )}
-        <Input
-          id={id}
-          type={type}
-          value={value}
-          onChange={onChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholder={!showLabel ? label : ''}
-          className={`border-0 focus:ring-0 ${error ? 'text-red-500' : ''}`}
-        />
+        <div className="flex items-center">
+          <Input
+            id={id}
+            type={type}
+            value={value}
+            onChange={onChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder={!showLabel ? label : ''}
+            className={`border-0 focus:ring-0 ${error ? 'text-red-500' : ''}`}
+            readOnly={readOnly}
+          />
+          {rightElement && (
+            <div className="pr-3">{rightElement}</div>
+          )}
+        </div>
       </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>

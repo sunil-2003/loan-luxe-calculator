@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -32,6 +31,7 @@ const LoanCalculator: React.FC = () => {
   const [loanData, setLoanData] = useState<LoanData | null>(null);
   const [showResults, setShowResults] = useState<boolean>(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [showConvertedEMI, setShowConvertedEMI] = useState<boolean>(false);
 
   // Validate input field in real-time
   const validateField = (name: string, value: string): string => {
@@ -135,12 +135,14 @@ const LoanCalculator: React.FC = () => {
     });
     
     setShowResults(true);
+    setShowConvertedEMI(true);
   };
 
   // Reset the calculator
   const resetCalculator = () => {
     setLoanData(null);
     setShowResults(false);
+    setShowConvertedEMI(false);
   };
 
   // Get converted amount based on selected currency
@@ -148,6 +150,13 @@ const LoanCalculator: React.FC = () => {
     if (currency === 'USD' || !exchangeRates[currency]) return amount;
     return amount * exchangeRates[currency];
   };
+
+  // When currency changes and we already have results, show the converted EMI
+  useEffect(() => {
+    if (showResults && loanData) {
+      setShowConvertedEMI(true);
+    }
+  }, [currency]);
 
   return (
     <div className="loan-container">
@@ -200,16 +209,13 @@ const LoanCalculator: React.FC = () => {
           
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-4">
-              <div>
-                <label className="block mb-1">Currency</label>
-                <div className="flex items-center space-x-4">
-                  <CurrencySelector />
-                  {currency !== 'USD' && (
-                    <p className="text-sm">
-                      Converted EMI: {currency} {getConvertedAmount(loanData.monthlyPayment).toFixed(2)}
-                    </p>
-                  )}
-                </div>
+              <div className="relative">
+                <CurrencySelector />
+                {showConvertedEMI && currency !== 'USD' && (
+                  <p className="text-sm absolute top-0 left-44 whitespace-nowrap mt-2">
+                    Converted EMI: {currency} {getConvertedAmount(loanData.monthlyPayment).toFixed(2)}
+                  </p>
+                )}
               </div>
             </div>
             
