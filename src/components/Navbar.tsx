@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
 
 const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -40,21 +41,15 @@ const Navbar: React.FC = () => {
         >
           ERROR PAGE
         </Link>
-        <button 
-          onClick={toggleTheme} 
-          className="theme-toggle ml-2"
-          style={{ backgroundColor: theme === 'dark' ? '#555' : '#4285f4' }}
-        >
-          <span 
-            className="theme-toggle-thumb" 
-            style={{ transform: theme === 'dark' ? 'translateX(1.5rem)' : 'translateX(0)' }}
-          >
-            {theme === 'dark' ? 
-              <Moon className="h-4 w-4 text-gray-800" /> : 
-              <Sun className="h-4 w-4 text-yellow-500" />
-            }
+        <div className="flex items-center space-x-2 ml-2">
+          <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            {theme === 'dark' ? 'Dark' : 'Light'}
           </span>
-        </button>
+          <Switch 
+            checked={theme === 'dark'} 
+            onCheckedChange={toggleTheme} 
+          />
+        </div>
       </nav>
     </header>
   );

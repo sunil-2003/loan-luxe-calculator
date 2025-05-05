@@ -5,7 +5,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import CurrencySelector from './CurrencySelector';
 import LoanSchedule from './LoanSchedule';
 import { toast } from "@/components/ui/sonner";
-import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 
 interface LoanData {
@@ -24,7 +23,7 @@ export interface AmortizationEntry {
 }
 
 const LoanCalculator: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { currency, exchangeRates } = useCurrency();
   
   const [loanAmount, setLoanAmount] = useState<string>('100000');
@@ -113,18 +112,7 @@ const LoanCalculator: React.FC = () => {
 
   return (
     <div className="loan-container">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Loan Calculator Dashboard</h1>
-        <div className="flex items-center space-x-2">
-          <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            {theme === 'dark' ? 'Dark' : 'Light'}
-          </span>
-          <Switch 
-            checked={theme === 'dark'} 
-            onCheckedChange={toggleTheme} 
-          />
-        </div>
-      </div>
+      <h1 className="text-3xl font-bold mb-4">Loan Calculator Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div>
@@ -184,15 +172,15 @@ const LoanCalculator: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div>
                 <label className="block mb-1">Currency</label>
-                <CurrencySelector />
-              </div>
-              {loanData && currency !== 'USD' && (
-                <div className="flex items-center h-10">
-                  <p className="mt-1 text-sm">
-                    Converted EMI: {currency} {getConvertedAmount(loanData.monthlyPayment).toFixed(2)}
-                  </p>
+                <div className="flex items-center space-x-4">
+                  <CurrencySelector />
+                  {currency !== 'USD' && (
+                    <p className="text-sm">
+                      Converted EMI: {currency} {getConvertedAmount(loanData.monthlyPayment).toFixed(2)}
+                    </p>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             
             <button
