@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import CurrencySelector from './CurrencySelector';
 import LoanSchedule from './LoanSchedule';
 import { toast } from "@/components/ui/sonner";
-import { Input } from "@/components/ui/input";
+import FloatingLabelInput from './FloatingLabelInput';
 
 interface LoanData {
   loanAmount: number;
@@ -33,32 +33,71 @@ const LoanCalculator: React.FC = () => {
   const [showResults, setShowResults] = useState<boolean>(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
-  // Validate input fields with regex
-  const validateInputs = () => {
-    const newErrors: {[key: string]: string} = {};
-    
+  // Validate input field in real-time
+  const validateField = (name: string, value: string): string => {
     // Regex patterns
     const numberPattern = /^[0-9]+(\.[0-9]{1,2})?$/;
     
-    if (!loanAmount || !numberPattern.test(loanAmount) || Number(loanAmount) <= 0) {
-      newErrors.loanAmount = 'Please enter a valid amount';
+    if (!value) {
+      return 'This field is required';
     }
     
-    if (!interestRate || !numberPattern.test(interestRate) || Number(interestRate) < 0 || Number(interestRate) > 100) {
-      newErrors.interestRate = 'Rate must be between 0-100';
+    if (!numberPattern.test(value)) {
+      return 'Please enter a valid number';
     }
     
-    if (!loanTerm || !numberPattern.test(loanTerm) || Number(loanTerm) <= 0) {
-      newErrors.loanTerm = 'Please enter a valid term in years';
+    const numValue = parseFloat(value);
+    
+    switch (name) {
+      case 'loanAmount':
+        return numValue <= 0 ? 'Amount must be greater than 0' : '';
+      case 'interestRate':
+        return numValue < 0 || numValue > 100 ? 'Rate must be between 0-100' : '';
+      case 'loanTerm':
+        return numValue <= 0 ? 'Term must be greater than 0' : '';
+      default:
+        return '';
     }
+  };
+
+  // Handle input changes with real-time validation
+  const handleInputChange = (name: string, value: string) => {
+    switch (name) {
+      case 'loanAmount':
+        setLoanAmount(value);
+        break;
+      case 'interestRate':
+        setInterestRate(value);
+        break;
+      case 'loanTerm':
+        setLoanTerm(value);
+        break;
+      default:
+        break;
+    }
+    
+    const errorMessage = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: errorMessage
+    }));
+  };
+
+  // Validate all input fields
+  const validateAllInputs = () => {
+    const newErrors = {
+      loanAmount: validateField('loanAmount', loanAmount),
+      interestRate: validateField('interestRate', interestRate),
+      loanTerm: validateField('loanTerm', loanTerm)
+    };
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return !Object.values(newErrors).some(error => error);
   };
 
   // Calculate loan data
   const calculateLoan = () => {
-    if (!validateInputs()) {
+    if (!validateAllInputs()) {
       toast.error("Please fix the errors in the form");
       return;
     }
@@ -116,42 +155,33 @@ const LoanCalculator: React.FC = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div>
-          <label className="block mb-1">Loan Amount</label>
-          <Input
-            type="text"
+          <FloatingLabelInput
+            id="loanAmount"
+            label="Loan Amount"
             value={loanAmount}
-            onChange={(e) => setLoanAmount(e.target.value)}
-            className={`${errors.loanAmount ? 'border-red-500' : ''}`}
+            onChange={(e) => handleInputChange('loanAmount', e.target.value)}
+            error={errors.loanAmount}
           />
-          {errors.loanAmount && (
-            <p className="text-red-500 text-sm mt-1">{errors.loanAmount}</p>
-          )}
         </div>
         
         <div>
-          <label className="block mb-1">Interest Rate (%)</label>
-          <Input
-            type="text"
+          <FloatingLabelInput
+            id="interestRate"
+            label="Interest Rate (%)"
             value={interestRate}
-            onChange={(e) => setInterestRate(e.target.value)}
-            className={`${errors.interestRate ? 'border-red-500' : ''}`}
+            onChange={(e) => handleInputChange('interestRate', e.target.value)}
+            error={errors.interestRate}
           />
-          {errors.interestRate && (
-            <p className="text-red-500 text-sm mt-1">{errors.interestRate}</p>
-          )}
         </div>
         
         <div>
-          <label className="block mb-1">Term (Years)</label>
-          <Input
-            type="text"
+          <FloatingLabelInput
+            id="loanTerm"
+            label="Term (Years)"
             value={loanTerm}
-            onChange={(e) => setLoanTerm(e.target.value)}
-            className={`${errors.loanTerm ? 'border-red-500' : ''}`}
+            onChange={(e) => handleInputChange('loanTerm', e.target.value)}
+            error={errors.loanTerm}
           />
-          {errors.loanTerm && (
-            <p className="text-red-500 text-sm mt-1">{errors.loanTerm}</p>
-          )}
         </div>
       </div>
       
