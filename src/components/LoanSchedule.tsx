@@ -2,6 +2,14 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { AmortizationEntry } from './LoanCalculator';
+import { 
+  Table, 
+  TableHeader, 
+  TableBody, 
+  TableHead, 
+  TableRow, 
+  TableCell 
+} from "@/components/ui/table";
 
 interface LoanScheduleProps {
   schedule: AmortizationEntry[];
@@ -22,30 +30,30 @@ const LoanSchedule: React.FC<LoanScheduleProps> = ({ schedule, currency, exchang
     <div>
       <h3 className="text-xl font-semibold mb-2">Amortization Schedule ({currency})</h3>
       
-      <div className={`table-container ${theme}`}>
-        <table className="w-full">
-          <thead>
-            <tr className={`table-header ${theme}`}>
-              <th className="text-left w-1/4">Month</th>
-              <th className="text-left w-1/4">Principal</th>
-              <th className="text-left w-1/4">Interest</th>
-              <th className="text-left w-1/4">Remaining Balance</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
+      <div className={`border rounded-md mt-4 max-h-[400px] overflow-y-auto ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <Table>
+          <TableHeader>
+            <TableRow className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'} h-14`}>
+              <TableHead className="text-left w-1/4">Month</TableHead>
+              <TableHead className="text-left w-1/4">Principal</TableHead>
+              <TableHead className="text-left w-1/4">Interest</TableHead>
+              <TableHead className="text-left w-1/4">Remaining Balance</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {schedule.map((entry) => (
-              <tr 
+              <TableRow 
                 key={entry.month}
-                className={`table-row ${theme} ${entry.month % 2 === 0 ? theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50' : ''}`}
+                className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} hover:bg-transparent`}
               >
-                <td className="py-2">{entry.month}</td>
-                <td className="py-2">{formatCurrency(entry.principal)}</td>
-                <td className="py-2">{formatCurrency(entry.interest)}</td>
-                <td className="py-2">{formatCurrency(entry.remainingBalance)}</td>
-              </tr>
+                <TableCell className="py-2">{entry.month}</TableCell>
+                <TableCell className="py-2">{formatCurrency(entry.principal)}</TableCell>
+                <TableCell className="py-2">{formatCurrency(entry.interest)}</TableCell>
+                <TableCell className="py-2">{formatCurrency(entry.remainingBalance)}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import CurrencySelector from './CurrencySelector';
 import LoanSchedule from './LoanSchedule';
 import { toast } from "@/components/ui/sonner";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 interface LoanData {
   loanAmount: number;
@@ -22,7 +24,7 @@ export interface AmortizationEntry {
 }
 
 const LoanCalculator: React.FC = () => {
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { currency, exchangeRates } = useCurrency();
   
   const [loanAmount, setLoanAmount] = useState<string>('100000');
@@ -32,20 +34,23 @@ const LoanCalculator: React.FC = () => {
   const [showResults, setShowResults] = useState<boolean>(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
-  // Validate input fields
+  // Validate input fields with regex
   const validateInputs = () => {
     const newErrors: {[key: string]: string} = {};
     
-    if (!loanAmount || isNaN(Number(loanAmount)) || Number(loanAmount) <= 0) {
-      newErrors.loanAmount = 'Required';
+    // Regex patterns
+    const numberPattern = /^[0-9]+(\.[0-9]{1,2})?$/;
+    
+    if (!loanAmount || !numberPattern.test(loanAmount) || Number(loanAmount) <= 0) {
+      newErrors.loanAmount = 'Please enter a valid amount';
     }
     
-    if (!interestRate || isNaN(Number(interestRate)) || Number(interestRate) < 0) {
-      newErrors.interestRate = 'Rate must be a number';
+    if (!interestRate || !numberPattern.test(interestRate) || Number(interestRate) < 0 || Number(interestRate) > 100) {
+      newErrors.interestRate = 'Rate must be between 0-100';
     }
     
-    if (!loanTerm || isNaN(Number(loanTerm)) || Number(loanTerm) <= 0) {
-      newErrors.loanTerm = 'Required';
+    if (!loanTerm || !numberPattern.test(loanTerm) || Number(loanTerm) <= 0) {
+      newErrors.loanTerm = 'Please enter a valid term in years';
     }
     
     setErrors(newErrors);
@@ -108,16 +113,27 @@ const LoanCalculator: React.FC = () => {
 
   return (
     <div className="loan-container">
-      <h1 className="text-3xl font-bold mb-6">Loan Calculator Dashboard</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Loan Calculator Dashboard</h1>
+        <div className="flex items-center space-x-2">
+          <span className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            {theme === 'dark' ? 'Dark' : 'Light'}
+          </span>
+          <Switch 
+            checked={theme === 'dark'} 
+            onCheckedChange={toggleTheme} 
+          />
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div>
           <label className="block mb-1">Loan Amount</label>
-          <input
+          <Input
             type="text"
             value={loanAmount}
             onChange={(e) => setLoanAmount(e.target.value)}
-            className={`input-field ${theme} ${errors.loanAmount ? 'border-red-500' : ''}`}
+            className={`${errors.loanAmount ? 'border-red-500' : ''}`}
           />
           {errors.loanAmount && (
             <p className="text-red-500 text-sm mt-1">{errors.loanAmount}</p>
@@ -126,11 +142,11 @@ const LoanCalculator: React.FC = () => {
         
         <div>
           <label className="block mb-1">Interest Rate (%)</label>
-          <input
+          <Input
             type="text"
             value={interestRate}
             onChange={(e) => setInterestRate(e.target.value)}
-            className={`input-field ${theme} ${errors.interestRate ? 'border-red-500' : ''}`}
+            className={`${errors.interestRate ? 'border-red-500' : ''}`}
           />
           {errors.interestRate && (
             <p className="text-red-500 text-sm mt-1">{errors.interestRate}</p>
@@ -139,11 +155,11 @@ const LoanCalculator: React.FC = () => {
         
         <div>
           <label className="block mb-1">Term (Years)</label>
-          <input
+          <Input
             type="text"
             value={loanTerm}
             onChange={(e) => setLoanTerm(e.target.value)}
-            className={`input-field ${theme} ${errors.loanTerm ? 'border-red-500' : ''}`}
+            className={`${errors.loanTerm ? 'border-red-500' : ''}`}
           />
           {errors.loanTerm && (
             <p className="text-red-500 text-sm mt-1">{errors.loanTerm}</p>
@@ -165,13 +181,17 @@ const LoanCalculator: React.FC = () => {
           </h2>
           
           <div className="flex justify-between items-center mb-4">
-            <div>
-              <label className="block mb-1">Currency</label>
-              <CurrencySelector />
+            <div className="flex items-center space-x-4">
+              <div>
+                <label className="block mb-1">Currency</label>
+                <CurrencySelector />
+              </div>
               {loanData && currency !== 'USD' && (
-                <p className="mt-2">
-                  Converted EMI: {currency} {getConvertedAmount(loanData.monthlyPayment).toFixed(2)}
-                </p>
+                <div className="flex items-center h-10">
+                  <p className="mt-1 text-sm">
+                    Converted EMI: {currency} {getConvertedAmount(loanData.monthlyPayment).toFixed(2)}
+                  </p>
+                </div>
               )}
             </div>
             

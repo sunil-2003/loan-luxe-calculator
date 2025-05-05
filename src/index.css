@@ -90,14 +90,6 @@
   @apply max-w-7xl mx-auto p-6;
 }
 
-.input-field {
-  @apply border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-appBlue;
-}
-
-.input-field.dark {
-  @apply bg-gray-800 border-gray-700;
-}
-
 .calculate-btn {
   @apply bg-appBlue text-white py-2 px-6 rounded-md hover:bg-blue-600 transition-colors;
 }
@@ -120,36 +112,4 @@
 
 .currency-dropdown.dark {
   @apply bg-gray-800 border-gray-700;
-}
-
-.table-container {
-  @apply border rounded-md mt-4 max-h-[400px] overflow-y-auto;
-}
-
-.table-container.dark {
-  @apply border-gray-700;
-}
-
-.table-header {
-  @apply bg-gray-100 py-2 px-4 sticky top-0;
-}
-
-.table-header.dark {
-  @apply bg-gray-800;
-}
-
-.table-row {
-  @apply border-t py-2 px-4;
-}
-
-.table-row.dark {
-  @apply border-gray-700;
-}
-
-.theme-toggle {
-  @apply relative inline-flex h-6 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-appBlue;
-}
-
-.theme-toggle-thumb {
-  @apply pointer-events-none block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform;
 }
